@@ -1,0 +1,37 @@
+-- duckdb_init.sql — extensions + attaches for cross-layer verification.
+--
+-- Rendered from scripts/duckdb_init.sql.template by scripts/verify_pipeline.py.
+-- Placeholder tokens (${MSSQL_HOST}, etc.) are expanded from the environment
+-- with sensible host-mode defaults. See scripts/verify_pipeline.py --help.
+--
+-- Loads:
+--   * httpfs   → read MinIO (raw CSV + bronze Parquet)
+--   * mssql    → attach SQL Server (silver landings + SCD2 snapshots)
+--   * ducklake → attach the DuckLake bronze catalog
+
+INSTALL httpfs;                    LOAD httpfs;
+INSTALL mssql FROM community;      LOAD mssql;
+INSTALL ducklake;                  LOAD ducklake;
+INSTALL sqlite;                    LOAD sqlite;
+
+-- MinIO (S3 compatible) settings
+SET s3_endpoint        = '${MINIO_ENDPOINT_HOSTPORT}';
+SET s3_url_style       = 'path';
+SET s3_use_ssl         = false;
+SET s3_region          = 'us-east-1';
+SET s3_access_key_id   = '${MINIO_ACCESS_KEY}';
+SET s3_secret_access_key = '${MINIO_SECRET_KEY}';
+
+-- DuckLake (SQLite catalog + S3 data) — only ATTACH if catalog file exists
+-- locally. If you're running somewhere without the catalog (e.g. a CI
+-- verification job), comment this out or re-hydrate it from the pipeline
+-- run that produced the current SQL Server state.
+ATTACH IF NOT EXISTS 'ducklake:sqlite:${DUCKLAKE_CATALOG_PATH}' AS lake
+    (DATA_PATH 's3://informat/bronze-ducklake/',
+     AUTOMATIC_MIGRATION true);
+
+-- SQL Server — ADO.NET connection string. TrustServerCertificate is an
+-- alias for Encrypt in ADO.NET form (per the mssql community extension docs).
+ATTACH IF NOT EXISTS
+    'Server=${MSSQL_HOST},${MSSQL_PORT};Database=${MSSQL_DB};User Id=${MSSQL_USER};Password=${MSSQL_PWD};TrustServerCertificate=true'
+    AS ms (TYPE mssql);

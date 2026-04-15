@@ -1,0 +1,13 @@
+packages:
+  # run dbt deps to install
+  - package: dbt-labs/dbt_utils
+    version: 1.3.3
+  - package: dbt-labs/codegen
+    version: 0.14.0
+  - package: brooklyn-data/dbt_artifacts
+    version: 2.10.0
+  # Row-level diff macros — used by fidemo/analyses/compare_*.sql
+  # to verify the two bronze paths (Parquet / DuckLake) produce
+  # bit-identical silver landings and SCD2 snapshots.
+  - package: dbt-labs/audit_helper
+    version: 0.12.0

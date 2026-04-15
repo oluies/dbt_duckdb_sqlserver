@@ -1,0 +1,65 @@
+# docker-compose.yml
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio-dbt-duckdb
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-dbt-duckdb
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "MySecretPassword123!"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  # Reusable dev environment for dbt + pipeline scripts.
+  # Only runs when invoked under the `dev` profile, e.g.:
+  #     docker compose --profile dev up -d dbt-runner
+  #     docker compose --profile dev run --rm dbt-runner bash
+  # Also used as the target for the VS Code devcontainer.
+  dbt-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dbt-fidemo:latest
+    container_name: dbt-fidemo-runner
+    profiles: ["dev"]
+    depends_on:
+      - minio
+      - mssql
+    volumes:
+      - .:/workspace:cached
+    working_dir: /workspace
+    # Service-name networking: the env vars baked into the image already
+    # point at `mssql-dbt-duckdb` and `minio-dbt-duckdb`, so no override
+    # is needed when running inside the compose network. Exposed here
+    # explicitly for visibility / easy override.
+    environment:
+      MSSQL_HOST: mssql-dbt-duckdb
+      MSSQL_PORT: 1433
+      MSSQL_DB: fidemo
+      MSSQL_USER: fidemo_loader
+      MSSQL_PWD: StrongPassword456!
+      MINIO_ENDPOINT_HOSTPORT: minio-dbt-duckdb:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadminpassword
+      MSSQL_DUCKDB_CONN: "Server=mssql-dbt-duckdb,1433;Database=fidemo;User Id=fidemo_loader;Password=StrongPassword456!;TrustServerCertificate=true"
+    # Keep alive for `docker exec` / devcontainer attach.
+    command: sleep infinity
+
+volumes:
+  minio_data:
+  mssql_data:

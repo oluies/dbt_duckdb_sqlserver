@@ -1,0 +1,73 @@
+{
+  "name": "dbt fidemo (DuckDB + SQL Server)",
+
+  // Use the existing docker-compose.yml so MinIO + SQL Server come up
+  // alongside the dev container and are reachable by compose service name.
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "dbt-runner",
+  "workspaceFolder": "/workspace",
+
+  // Activate the dev profile so docker compose spins up dbt-runner.
+  "runServices": ["dbt-runner", "mssql", "minio"],
+
+  // Keep the container around between VS Code sessions for faster reopen.
+  "shutdownAction": "stopCompose",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // dbt Power User — model preview, lineage DAG, compiled SQL, tests.
+        // Main productivity boost for exploring this repo.
+        "innoverio.vscode-dbt-power-user",
+        // SQLFluff lint for dbt Jinja+SQL
+        "dorzey.vscode-sqlfluff",
+        // Python + type intelligence (points at /opt/venv)
+        "ms-python.python",
+        // Docker tools (compose + containers view)
+        "ms-azuretools.vscode-docker",
+        // Mermaid previews for ARCHITECTURE.md diagrams
+        "bierner.markdown-mermaid",
+        // YAML validation for _sources.yml / packages.yml / dbt_project.yml
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        // --- Python ---
+        "python.defaultInterpreterPath": "/opt/venv/bin/python",
+        "python.terminal.activateEnvironment": false,
+        "terminal.integrated.defaultProfile.linux": "bash",
+
+        // --- dbt Power User ---
+        // Point the extension at the project + profiles (both live in fidemo/).
+        // Without this the ext searches from workspaceFolder and misses them.
+        "dbt.dbtIntegration": "core",
+        "dbt.dbtPythonPathOverride": "/opt/venv/bin/python",
+        "dbt.profilesDirOverride": "/workspace/fidemo",
+        "dbt.queryLimit": 500,
+        "dbt.altimateAiKey": "",
+
+        // --- SQLFluff ---
+        "sqlfluff.executablePath": "/opt/venv/bin/sqlfluff",
+        "sqlfluff.dialect": "duckdb",
+        "sqlfluff.linter.run": "onSave",
+        "sqlfluff.experimental.format.executeInTerminal": false,
+
+        // --- Files ---
+        "files.associations": {
+          "*.sql": "jinja-sql"
+        },
+
+        // --- Editor ---
+        "[jinja-sql]": {
+          "editor.defaultFormatter": "dorzey.vscode-sqlfluff"
+        },
+        "[sql]": {
+          "editor.defaultFormatter": "dorzey.vscode-sqlfluff"
+        }
+      }
+    }
+  },
+
+  // Run once after the container is created to surface the tool versions
+  // so drift between image and lockfile is obvious at container-attach time.
+  "postCreateCommand": "python --version && dbt --version || true && duckdb --version 2>/dev/null || true && flyway --version | head -1"
+}

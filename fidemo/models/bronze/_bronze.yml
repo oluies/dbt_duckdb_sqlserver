@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: bronze_scb_bulkfil_parquet
+    description: |
+      Hive-partitioned Parquet bronze for the SCB bulk file (one row per
+      delivery × peorgnr). Duplicates by peorgnr are EXPECTED here — each
+      delivery file may contain the same company. Dedup happens in the
+      silver landing model (`scb_bulkfil_landing_from_parquet`); the
+      duplicate rows are quarantined in `scb_bulkfil_dedup_rejects`.
+    columns:
+      - name: peorgnr
+        description: "Swedish org/person number (PeOrgNr)."
+        tests:
+          - not_null:
+              config:
+                severity: error
+          # Bronze legitimately has duplicates across deliveries. We mark
+          # the test as `warn` so the run continues, and `store_failures`
+          # so the duplicate keys are persisted to dbt_test__audit for
+          # human inspection. See README → "Duplicate-row audit pattern".
+          - unique:
+              config:
+                severity: warn
+                store_failures: true
+      - name: effective_date
+        description: "Delivery date derived from the hive partition (year/month/day)."
+        tests:
+          - not_null:
+              config:
+                severity: error
+
+  # ducklake bronze is intentionally not tested here — it's the same data
+  # as the parquet variant via a different storage substrate, and dbt's
+  # default ref() resolution can't reach `lake.bronze.<name>` (the
+  # `-- depends_on:` hardcoding workaround in scb_bulkfil_landing_from_ducklake
+  # is a known constraint). One audited bronze is sufficient signal.

@@ -1,0 +1,48 @@
+fidemo:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'my_db.duckdb'
+      # Required for DuckLake writes: dbt-duckdb's default BEGIN...COMMIT
+      # wrapping doesn't propagate to attached catalogs (verified empirically
+      # — CTAS reports OK but ducklake_snapshot stays at same snapshot_id,
+      # i.e. no metadata commit). Disabling transactions lets DuckLake manage
+      # its own commit. Our materializations are single-statement CTAS, so
+      # we don't need dbt's transaction wrapping anyway.
+      disable_transactions: true
+      # Extensions loaded at connection start.
+      # - httpfs    : read/write MinIO (S3)
+      # - sqlite    : used by the DuckLake catalog
+      # - ducklake  : DuckLake lakehouse format (bronze variant)
+      # - mssql (community): native TDS push to SQL Server (bronze → silver landing)
+      extensions:
+        - httpfs
+        - sqlite
+        - ducklake
+      # Community extensions require an extra INSTALL step; we do that
+      # inside the custom materializations so the repo is self-contained.
+      # MinIO S3 settings — defaults match create_minio_hive.py
+      settings:
+        s3_endpoint: "{{ env_var('MINIO_ENDPOINT_HOSTPORT', 'localhost:9000') }}"
+        s3_url_style: 'path'
+        s3_use_ssl: false
+        s3_region: 'us-east-1'
+        s3_access_key_id: "{{ env_var('MINIO_ACCESS_KEY', 'minioadmin') }}"
+        s3_secret_access_key: "{{ env_var('MINIO_SECRET_KEY', 'minioadminpassword') }}"
+      # NOTE: The mssqlsqlalchemy plugin was retired in favour of the
+      # `mssql` community extension (see fidemo/macros/materialization_mssql_native.sql).
+
+    # Native SQL Server target — used by `dbt snapshot --target sqlserver`
+    # so SCD2 bookkeeping (dbt_valid_from/to, dbt_scd_id) lives in SQL Server.
+    sqlserver:
+      type: sqlserver
+      driver: 'ODBC Driver 18 for SQL Server'
+      server: "{{ env_var('MSSQL_HOST', 'localhost') }}"
+      port: 1433
+      database: "{{ env_var('MSSQL_DB', 'fidemo') }}"
+      schema: finance
+      user: "{{ env_var('MSSQL_USER', 'sa') }}"
+      password: "{{ env_var('MSSQL_PWD', 'MySecretPassword123!') }}"
+      trust_cert: true
+      encrypt: true

@@ -1,0 +1,40 @@
+# --- Python venv ---
+venv_dbt_duckdb/
+
+# --- dbt build artefacts (regenerated per run) ---
+fidemo/target/
+fidemo/dbt_packages/
+fidemo/logs/
+fidemo/package-lock.yml
+fidemo/.user.yml
+
+# --- Local DuckDB + DuckLake state ---
+fidemo/my_db.duckdb
+fidemo/my_db.duckdb.wal
+fidemo/ducklake_catalog.sqlite
+fidemo/ducklake_catalog.sqlite-journal
+
+# --- Flyway (downloaded tarball + extracted tree) ---
+flyway-*/
+flyway-commandline-*.tar.gz
+flyway.log
+
+# --- Corporate / custom certificates ---
+cert/
+
+# --- Claude Code local state ---
+.claude/settings.local.json
+
+# --- Generated presentation decks (rebuild via `make build-decks`) ---
+docs/*.pptx
+# Office / Keynote lockfiles when a deck is open
+~$*.pptx
+**/~$*
+
+# --- Generic Python / IDE noise ---
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store

@@ -1,0 +1,26 @@
+black
+dbt-duckdb
+# Pinned to 1.5.1 — the NEWEST DuckDB where the `mssql` community extension
+# is published across osx_arm64, linux_amd64, and linux_arm64 on
+# community-extensions.duckdb.org (1.5.2+ has 404s everywhere, per matrix
+# probe on 2026-04-14). 1.4.x also works but 1.5.1 is strictly newer.
+# See fidemo/macros/materialization_mssql_native.sql.
+duckdb==1.5.1
+networkx
+pandas
+plotly
+pytest
+pyyaml
+requests
+sqlfluff
+pyodbc
+sqlalchemy
+dbt-core 
+# Pinned — dbt-sqlserver<=1.9.0 is the newest published; 1.3.1 (which uv
+# might otherwise resolve alongside dbt-core 1.11) still imports the
+# removed `dbt.clients.agate_helper.empty_table`, which 1.9.0 fixed.
+dbt-sqlserver==1.9.0
+polars
+pyarrow
+connectorx
+boto3

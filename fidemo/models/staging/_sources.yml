@@ -1,0 +1,53 @@
+version: 2
+
+sources:
+  - name: main
+    schema: main  # DuckDB's default schema
+    tables:
+      - name: raw_finance
+        description: "Raw finance data read directly from Parquet files (v1 households pipeline)"
+        meta:
+          # Defaults provided so dbt parsing doesn't fail when the v1
+          # pipeline isn't being used (e.g. in the container, or v2-only runs).
+          # The v1 households models are the only consumers of this source.
+          external_location: "{{ env_var('PARQUET_PATH', '/tmp') }}/{{ env_var('FILE_PATTERN', '*.parquet') }}"
+          options:
+            filename: 1  # <--- Detta lägger till en kolumn 'filename' automatiskt
+
+  # MinIO-hosted SCB bulk file (tab-delimited, hive-partitioned by year/month/day).
+  # Uploaded by create_minio_hive.py into s3://informat/seedcsv/year=*/month=*/day=*/
+  - name: minio
+    schema: main
+    tables:
+      - name: raw_scb_bulkfil
+        description: "SCB bulk file (tab-delimited, hive-partitioned) read from MinIO via DuckDB httpfs"
+        meta:
+          external_location: |
+            read_csv(
+              's3://informat/seedcsv/year=*/month=*/day=*/scb_bulkfil_JE_*.txt',
+              delim='\t',
+              header=true,
+              encoding='latin-1',
+              hive_partitioning=true,
+              union_by_name=true,
+              sample_size=-1,
+              all_varchar=true,
+              filename='source_file'
+            )
+
+  # SQL Server silver tables populated by the `mssql_native` materialization
+  # and the `dbt snapshot --target sqlserver` step. Exposed here as sources
+  # so they can be queried via `dbt show` and `source()` from either target.
+  - name: finance_landing
+    schema: finance
+    tables:
+      - name: scb_bulkfil_landing_from_parquet
+        description: "Landing table fed from the hive-Parquet bronze (input to the primary SCD2 snapshot)"
+      - name: scb_bulkfil_landing_from_ducklake
+        description: "Landing table fed from the DuckLake bronze (input to the DuckLake-path SCD2 snapshot)"
+      - name: scb_bulkfil_dedup_rejects
+        description: "Rows from bronze that lost the latest-per-peorgnr dedup race (carries _dedup_rank)"
+      - name: snap_scb_bulkfil_scd2
+        description: "SCD2 snapshot driven by the Parquet-path landing table"
+      - name: snap_scb_bulkfil_scd2_from_ducklake
+        description: "SCD2 snapshot driven by the DuckLake-path landing table"

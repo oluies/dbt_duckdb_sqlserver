@@ -1,0 +1,55 @@
+# Name your project! Project names should contain only lowercase characters
+# and underscores.
+name: 'fidemo'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'fidemo'
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+models:
+  fidemo:
+    # 1. Staging (DuckDB Views — read from MinIO via httpfs)
+    staging:
+      +materialized: view
+      +schema: staging
+
+    # 2. Bronze (data lake in MinIO — two parallel variants)
+    #    Variant-specific materialization is declared per-model so we can
+    #    demo both hive-Parquet and DuckLake side-by-side.
+    bronze:
+      +schema: bronze
+
+    # 3. Exports (SQL Server landing tables via `mssql` community extension)
+    exports:
+      +materialized: mssql_native
+      +target_mssql_schema: finance
+      +strategy: replace
+
+on-run-end:
+  # dbt_artifacts tables only exist in the DuckDB target; skip on sqlserver
+  # (which we use only for snapshots).
+  - "{% if target.type == 'duckdb' %}{{ dbt_artifacts.upload_results(results) }}{% endif %}"
+
+vars:
+  execution_year: 2025
+
+  # Bronze output locations (MinIO)
+  bronze_parquet_path: "s3://informat/bronze-parquet"
+  bronze_ducklake_data_path: "s3://informat/bronze-ducklake/"
+  bronze_ducklake_catalog_path: "ducklake_catalog.sqlite"  # relative to the dbt project dir

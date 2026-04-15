@@ -3,6 +3,7 @@
     "dbt-extras@dbt-agent-marketplace": true,
     "recce-quickstart@recce-claude-plugin": true,
     "commit-commands@claude-plugins-official": true,
-    "github@claude-plugins-official": true
+    "github@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
   }
 }

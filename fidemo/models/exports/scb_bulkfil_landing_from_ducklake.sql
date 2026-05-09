@@ -25,5 +25,5 @@
 -- Same rationale as scb_bulkfil_landing_from_parquet: SCD2's MERGE
 -- requires one source row per unique_key. QUALIFY runs in DuckDB.
 -- depends_on: {{ ref('bronze_scb_bulkfil_ducklake') }}
-select * from lake.bronze.bronze_scb_bulkfil_ducklake
-qualify row_number() over (partition by peorgnr order by effective_date desc) = 1
+SELECT * FROM lake.bronze.bronze_scb_bulkfil_ducklake
+QUALIFY row_number() OVER (PARTITION BY peorgnr ORDER BY effective_date DESC) = 1

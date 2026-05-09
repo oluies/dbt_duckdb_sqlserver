@@ -9,30 +9,30 @@
 -- qualifier `cast(PeOrgNr as varchar) as peorgnr` trips the
 -- "referenced before defined" binder error.
 
-with src as (
-    select * from {{ source('minio', 'raw_scb_bulkfil') }}
+WITH src AS (
+    SELECT * FROM {{ source('minio', 'raw_scb_bulkfil') }}
 )
-select
-    cast(src.PeOrgNr        as varchar) as peorgnr,
-    cast(src.Foretagsnamn   as varchar) as foretagsnamn,
-    cast(src.COAdress       as varchar) as coadress,
-    cast(src.Gatuadress     as varchar) as gatuadress,
-    cast(src.PostNr         as varchar) as postnr,
-    cast(src.PostOrt        as varchar) as postort,
-    cast(src.JurForm        as varchar) as jurform,
-    cast(src.FtgStat        as varchar) as ftgstat,
-    cast(src.JEStat         as varchar) as jestat,
-    cast(src.Namn           as varchar) as namn,
-    cast(src.Ng1            as varchar) as ng1,
-    cast(src.Ng2            as varchar) as ng2,
-    cast(src.Ng3            as varchar) as ng3,
-    cast(src.Ng4            as varchar) as ng4,
-    cast(src.Ng5            as varchar) as ng5,
-    cast(src.RegDatKtid     as varchar) as regdatktid,
-    cast(src.Reklamsparrtyp as varchar) as reklamsparrtyp,
-    cast(src.ForAndrTyp     as varchar) as forandrtyp,
-    make_date(cast(src.year as int), cast(src.month as int), cast(src.day as int)) as effective_date,
+SELECT
+    cast(src.peorgnr AS varchar) AS peorgnr,
+    cast(src.foretagsnamn AS varchar) AS foretagsnamn,
+    cast(src.coadress AS varchar) AS coadress,
+    cast(src.gatuadress AS varchar) AS gatuadress,
+    cast(src.postnr AS varchar) AS postnr,
+    cast(src.postort AS varchar) AS postort,
+    cast(src.jurform AS varchar) AS jurform,
+    cast(src.ftgstat AS varchar) AS ftgstat,
+    cast(src.jestat AS varchar) AS jestat,
+    cast(src.namn AS varchar) AS namn,
+    cast(src.ng1 AS varchar) AS ng1,
+    cast(src.ng2 AS varchar) AS ng2,
+    cast(src.ng3 AS varchar) AS ng3,
+    cast(src.ng4 AS varchar) AS ng4,
+    cast(src.ng5 AS varchar) AS ng5,
+    cast(src.regdatktid AS varchar) AS regdatktid,
+    cast(src.reklamsparrtyp AS varchar) AS reklamsparrtyp,
+    cast(src.forandrtyp AS varchar) AS forandrtyp,
+    make_date(cast(src.year AS int), cast(src.month AS int), cast(src.day AS int)) AS effective_date,
     src.source_file,
-    get_current_timestamp() as last_updated_dt,
-    '{{ invocation_id }}' as invocation_id
-from src
+    get_current_timestamp() AS last_updated_dt,
+    '{{ invocation_id }}' AS invocation_id
+FROM src

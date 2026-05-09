@@ -93,7 +93,8 @@ import re
 def _extract_block(sql_text: str, n: int) -> str:
     m = re.search(
         rf"-- >>>REPORT-{n}-BEGIN\s*(.*?)\s*-- >>>REPORT-{n}-END",
-        sql_text, flags=re.DOTALL,
+        sql_text,
+        flags=re.DOTALL,
     )
     if not m:
         raise RuntimeError(f"could not find REPORT-{n} block in {SQL_FILE}")
@@ -104,8 +105,10 @@ def _print_table(rel, *, title: str | None = None) -> list[tuple]:
     """rel is a duckdb.DuckDBPyRelation. Returns rows (for callers that care)."""
     rows = rel.fetchall()
     cols = [c for c in rel.columns]
-    widths = [max(len(c), max((len(str(r[i])) for r in rows), default=0))
-              for i, c in enumerate(cols)]
+    widths = [
+        max(len(c), max((len(str(r[i])) for r in rows), default=0))
+        for i, c in enumerate(cols)
+    ]
     if title:
         print(f"\n### {title}\n")
     print("| " + " | ".join(c.ljust(w) for c, w in zip(cols, widths)) + " |")
@@ -124,13 +127,15 @@ def report_summary(con) -> None:
 def report_peorgnr(con, peorgnr: str | None) -> None:
     if peorgnr is None:
         # Pick an interesting peorgnr — one with >1 SCD2 version; else any.
-        row = con.execute("""
+        row = con.execute(
+            """
             SELECT COALESCE(
               (SELECT peorgnr FROM ms.finance.snap_scb_bulkfil_scd2
                GROUP BY peorgnr HAVING COUNT(*) > 1 LIMIT 1),
               (SELECT peorgnr FROM ms.finance.snap_scb_bulkfil_scd2 LIMIT 1)
             )
-        """).fetchone()
+        """
+        ).fetchone()
         peorgnr = row[0] if row and row[0] else None
 
     if peorgnr is None:
@@ -139,8 +144,7 @@ def report_peorgnr(con, peorgnr: str | None) -> None:
 
     block = _extract_block(SQL_FILE.read_text(), 2)
     block = Template(block).safe_substitute({"TARGET_PEORGNR": peorgnr})
-    _print_table(con.sql(block),
-                 title=f"Cross-layer view for peorgnr = {peorgnr}")
+    _print_table(con.sql(block), title=f"Cross-layer view for peorgnr = {peorgnr}")
 
 
 def report_integrity(con) -> int:
@@ -161,20 +165,40 @@ def report_integrity(con) -> int:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
-    p = argparse.ArgumentParser(description=__doc__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--mode", choices=["auto", "host", "container"], default="auto",
-                   help="Which default hostnames to use (default: auto-detect)")
-    p.add_argument("--summary",    action="store_true", help="row counts per layer")
-    p.add_argument("--peorgnr",    metavar="ID", nargs="?", const="__auto__",
-                   help="cross-layer view for one peorgnr (picks an interesting one if omitted)")
-    p.add_argument("--integrity",  action="store_true",
-                   help="only the integrity checks; exit 1 on problems")
-    p.add_argument("--all",        action="store_true",
-                   help="all three reports (default when no flag given)")
-    p.add_argument("--emit-init",  action="store_true",
-                   help="print the rendered init SQL (for scripts/harlequin piping) and exit")
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    p.add_argument(
+        "--mode",
+        choices=["auto", "host", "container"],
+        default="auto",
+        help="Which default hostnames to use (default: auto-detect)",
+    )
+    p.add_argument("--summary", action="store_true", help="row counts per layer")
+    p.add_argument(
+        "--peorgnr",
+        metavar="ID",
+        nargs="?",
+        const="__auto__",
+        help="cross-layer view for one peorgnr (picks an interesting one if omitted)",
+    )
+    p.add_argument(
+        "--integrity",
+        action="store_true",
+        help="only the integrity checks; exit 1 on problems",
+    )
+    p.add_argument(
+        "--all",
+        action="store_true",
+        help="all three reports (default when no flag given)",
+    )
+    p.add_argument(
+        "--emit-init",
+        action="store_true",
+        help="print the rendered init SQL (for scripts/harlequin piping) and exit",
+    )
     args = p.parse_args()
 
     env = resolve_env(args.mode)
@@ -187,8 +211,11 @@ def main() -> int:
     try:
         import duckdb
     except ImportError:
-        print("❌ duckdb module not available — install via `uv pip install "
-              "--python /opt/venv/bin/python duckdb`", file=sys.stderr)
+        print(
+            "❌ duckdb module not available — install via `uv pip install "
+            "--python /opt/venv/bin/python duckdb`",
+            file=sys.stderr,
+        )
         return 2
 
     # Default: all three reports

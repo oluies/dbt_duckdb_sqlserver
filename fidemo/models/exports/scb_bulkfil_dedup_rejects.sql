@@ -21,16 +21,16 @@
     strategy='replace'
 ) }}
 
-with ranked as (
-    select
+WITH ranked AS (
+    SELECT
         *,
-        row_number() over (
-            partition by peorgnr
-            order by effective_date desc
-        ) as _dedup_rank
-    from {{ ref('bronze_scb_bulkfil_parquet') }}
+        row_number() OVER (
+            PARTITION BY peorgnr
+            ORDER BY effective_date DESC
+        ) AS _dedup_rank
+    FROM {{ ref('bronze_scb_bulkfil_parquet') }}
 )
-select
+SELECT
     peorgnr,
     foretagsnamn,
     coadress,
@@ -54,5 +54,5 @@ select
     last_updated_dt,
     invocation_id,
     _dedup_rank   -- 2 = second-latest delivery, 3 = third-latest, ...
-from ranked
-where _dedup_rank > 1
+FROM ranked
+WHERE _dedup_rank > 1

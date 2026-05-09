@@ -13,7 +13,7 @@
     strategy='replace'
 ) }}
 
-select
+SELECT
     peorgnr,
     foretagsnamn,
     coadress,
@@ -36,4 +36,4 @@ select
     source_file,
     last_updated_dt,
     invocation_id
-from {{ ref('stg_scb_bulkfil') }}
+FROM {{ ref('stg_scb_bulkfil') }}

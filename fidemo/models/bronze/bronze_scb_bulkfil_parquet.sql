@@ -25,7 +25,7 @@
     }
 ) }}
 
-select
+SELECT
     peorgnr,
     foretagsnamn,
     coadress,
@@ -49,7 +49,7 @@ select
     last_updated_dt,
     invocation_id,
     -- partition keys at the end so COPY ... PARTITION_BY can pick them up
-    cast(date_part('year',  effective_date) as int) as year,
-    cast(date_part('month', effective_date) as int) as month,
-    cast(date_part('day',   effective_date) as int) as day
-from {{ ref('stg_scb_bulkfil') }}
+    cast(date_part('year', effective_date) AS int) AS year,
+    cast(date_part('month', effective_date) AS int) AS month,
+    cast(date_part('day', effective_date) AS int) AS day
+FROM {{ ref('stg_scb_bulkfil') }}

@@ -16,5 +16,5 @@
 -- errors with "MERGE attempted to UPDATE/DELETE the same row more than once".
 -- QUALIFY is DuckDB syntax; this SELECT is compiled and executed by DuckDB
 -- before the result is pushed to SQL Server via the mssql_native materialization.
-select * from {{ ref('bronze_scb_bulkfil_parquet') }}
-qualify row_number() over (partition by peorgnr order by effective_date desc) = 1
+SELECT * FROM {{ ref('bronze_scb_bulkfil_parquet') }}
+QUALIFY row_number() OVER (PARTITION BY peorgnr ORDER BY effective_date DESC) = 1

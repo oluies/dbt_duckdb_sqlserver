@@ -13,7 +13,7 @@
 # VS Code devcontainers (see .devcontainer/devcontainer.json). Can also be
 # used standalone: `docker build -t dbt-fidemo . && docker run --rm -it …`.
 
-FROM python:3.12-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 ARG TARGETARCH
 ARG FLYWAY_VERSION=10.22.0

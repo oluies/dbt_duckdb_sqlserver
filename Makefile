@@ -23,7 +23,7 @@ SYSTEM_CERT := /etc/ssl/certs/ca-certificates.crt
 PROJECT_DIR := fidemo
 
 # Flyway Config (Använd en version som garanterat finns)
-FLYWAY_VERSION := 10.10.0
+FLYWAY_VERSION := 10.22.0
 FLYWAY_DIR := flyway-$(FLYWAY_VERSION)
 # Detect OS + arch so the right Flyway archive is picked.
 # Supported archive suffixes (per Maven Central):

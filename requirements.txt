@@ -11,31 +11,31 @@ attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
-azure-core==1.39.0
+azure-core==1.41.0
     # via azure-identity
 azure-identity==1.25.3
-    # via dbt-sqlserver
+    # via dbt-fabric
 babel==2.18.0
     # via agate
 black==25.12.0
     # via -r requirements.in
-boto3==1.42.88
+boto3==1.43.6
     # via -r requirements.in
-botocore==1.42.88
+botocore==1.43.6
     # via
     #   boto3
     #   s3transfer
-certifi==2026.2.25
+certifi==2026.4.22
     # via requests
 cffi==2.0.0
     # via cryptography
-chardet==7.4.2
+chardet==7.4.3
     # via
     #   diff-cover
     #   sqlfluff
 charset-normalizer==3.4.7
     # via requests
-click==8.3.2
+click==8.3.3
     # via
     #   black
     #   dbt-core
@@ -47,34 +47,39 @@ colorama==0.4.6
     #   sqlfluff
 connectorx==0.4.5
     # via -r requirements.in
-cryptography==46.0.7
+cryptography==48.0.0
     # via
     #   azure-identity
     #   msal
     #   pyjwt
 daff==1.4.2
     # via dbt-core
-dbt-adapters==1.22.10
+dbt-adapters==1.23.0
     # via
     #   dbt-core
     #   dbt-duckdb
-dbt-common==1.37.3
+    #   dbt-fabric
+    #   dbt-sqlserver
+dbt-common==1.38.0
     # via
     #   dbt-adapters
     #   dbt-core
     #   dbt-duckdb
-dbt-core==1.11.8
+    #   dbt-fabric
+    #   dbt-sqlserver
+dbt-core==1.11.9
     # via
     #   -r requirements.in
     #   dbt-duckdb
+    #   dbt-fabric
     #   dbt-sqlserver
 dbt-duckdb==1.10.1
     # via -r requirements.in
-dbt-fabric==1.9.3
-    # via dbt-sqlserver
 dbt-extractor==0.6.0
     # via dbt-core
-dbt-protos==1.0.443
+dbt-fabric==1.9.3
+    # via dbt-sqlserver
+dbt-protos==1.0.491
     # via
     #   dbt-adapters
     #   dbt-common
@@ -91,7 +96,7 @@ duckdb==1.5.1
     # via
     #   -r requirements.in
     #   dbt-duckdb
-idna==3.11
+idna==3.13
     # via requests
 importlib-metadata==8.9.0
     # via dbt-semantic-interfaces
@@ -140,7 +145,7 @@ msgpack==1.1.2
     # via mashumaro
 mypy-extensions==1.1.0
     # via black
-narwhals==2.19.0
+narwhals==2.21.0
     # via plotly
 networkx==3.6.1
     # via
@@ -150,7 +155,7 @@ numpy==2.4.4
     # via pandas
 orderly-set==5.5.0
     # via deepdiff
-packaging==26.0
+packaging==26.2
     # via
     #   black
     #   dbt-core
@@ -176,9 +181,9 @@ pluggy==1.6.0
     # via
     #   diff-cover
     #   pytest
-polars==1.39.3
+polars==1.40.1
     # via -r requirements.in
-polars-runtime-32==1.39.3
+polars-runtime-32==1.40.1
     # via polars
 protobuf==6.33.6
     # via
@@ -186,15 +191,15 @@ protobuf==6.33.6
     #   dbt-common
     #   dbt-core
     #   dbt-protos
-pyarrow==23.0.1
+pyarrow==24.0.0
     # via -r requirements.in
 pycparser==3.0
     # via cffi
-pydantic==2.13.0
+pydantic==2.13.4
     # via
     #   dbt-core
     #   dbt-semantic-interfaces
-pydantic-core==2.46.0
+pydantic-core==2.46.4
     # via pydantic
 pygments==2.20.0
     # via
@@ -205,7 +210,7 @@ pyjwt==2.12.1
 pyodbc==5.1.0
     # via
     #   -r requirements.in
-    #   dbt-sqlserver
+    #   dbt-fabric
 pytest==9.0.3
     # via
     #   -r requirements.in
@@ -222,7 +227,7 @@ pytimeparse==1.1.8
     # via agate
 pytokens==0.4.1
     # via black
-pytz==2026.1.post1
+pytz==2026.2
     # via
     #   dbt-adapters
     #   dbt-core
@@ -250,7 +255,7 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
-s3transfer==0.16.0
+s3transfer==0.17.0
     # via boto3
 six==1.17.0
     # via python-dateutil
@@ -285,9 +290,9 @@ typing-extensions==4.15.0
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   botocore
     #   requests
-zipp==3.23.0
+zipp==3.23.1
     # via importlib-metadata

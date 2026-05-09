@@ -39,8 +39,8 @@ SEEDCSV_DIR = Path(__file__).resolve().parent.parent / "seedcsv"
 ENCODING = "latin-1"
 DELIM = "\t"
 
-DEMO_MARKER = "DEMO "    # used both as the pseudonym prefix and as the
-                         # idempotency sentinel (re-running detects it)
+DEMO_MARKER = "DEMO "  # used both as the pseudonym prefix and as the
+# idempotency sentinel (re-running detects it)
 
 # Columns we touch (by exact header label as it appears in the file).
 # Scope: name-bearing fields only. Addresses/zips/cities preserved.
@@ -65,8 +65,9 @@ def fake_co_address(original_peorgnr: str) -> str:
     return f"{DEMO_MARKER}PERSON {stable_hash('co:' + original_peorgnr, 10000):04d}"
 
 
-def is_already_anonymized(data_rows: list[list[str]],
-                          name_col_indices: list[int]) -> bool:
+def is_already_anonymized(
+    data_rows: list[list[str]], name_col_indices: list[int]
+) -> bool:
     """True only if EVERY non-empty value in any name-bearing column already
     starts with the DEMO_MARKER. Empty values don't count either way."""
     if not data_rows:
@@ -140,12 +141,19 @@ def process_file(path: Path, *, dry_run: bool) -> tuple[int, int, bool]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--dry-run", action="store_true",
-                        help="don't rewrite files; just report what would change")
-    parser.add_argument("--glob", default="scb_bulkfil_JE_*.txt",
-                        help="filename glob within seedcsv/ (default: %(default)s)")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="don't rewrite files; just report what would change",
+    )
+    parser.add_argument(
+        "--glob",
+        default="scb_bulkfil_JE_*.txt",
+        help="filename glob within seedcsv/ (default: %(default)s)",
+    )
     args = parser.parse_args()
 
     files = sorted(SEEDCSV_DIR.glob(args.glob))
@@ -153,8 +161,10 @@ def main() -> int:
         print(f"no files matched {SEEDCSV_DIR}/{args.glob}", file=sys.stderr)
         return 1
 
-    print(f"{'(dry-run) ' if args.dry_run else ''}"
-          f"Anonymizing {len(files)} file(s) in {SEEDCSV_DIR}/")
+    print(
+        f"{'(dry-run) ' if args.dry_run else ''}"
+        f"Anonymizing {len(files)} file(s) in {SEEDCSV_DIR}/"
+    )
     total_rewritten = 0
     for f in files:
         seen, rewritten, skipped = process_file(f, dry_run=args.dry_run)
@@ -164,8 +174,10 @@ def main() -> int:
             print(f"  ✓  {f.name:<60} {rewritten}/{seen} rows rewritten")
         total_rewritten += rewritten
 
-    print(f"\nTotal rows rewritten: {total_rewritten}"
-          f"{' (dry run, no files changed)' if args.dry_run else ''}")
+    print(
+        f"\nTotal rows rewritten: {total_rewritten}"
+        f"{' (dry run, no files changed)' if args.dry_run else ''}"
+    )
     return 0
 
 

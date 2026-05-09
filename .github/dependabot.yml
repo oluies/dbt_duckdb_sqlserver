@@ -32,12 +32,23 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    ignore:
+      # Project pins Python 3.12 in Makefile + requirements.txt; a 3.13/3.14
+      # base-image bump would diverge from host venvs. Allow minor/patch only.
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    ignore:
+      # mssql/server major bumps (e.g. 2022 → 2025) are not validated against
+      # the current dbt-sqlserver==1.9.0 / Flyway 10.22.0 combination. Allow
+      # minor/patch only; bump majors deliberately when ready.
+      - dependency-name: "mcr.microsoft.com/mssql/server"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"

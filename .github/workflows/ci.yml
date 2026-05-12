@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (sqlfluff + black)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          uv venv --python 3.12 .venv
+          uv pip install --python .venv/bin/python -r requirements.txt
+
+      - name: Black (check)
+        run: .venv/bin/black --check .
+
+      - name: SQLFluff lint (DuckDB models)
+        working-directory: fidemo
+        run: ../.venv/bin/sqlfluff lint models --dialect duckdb
+
+  dbt-parse:
+    name: dbt parse (duckdb target)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          uv venv --python 3.12 .venv
+          uv pip install --python .venv/bin/python -r requirements.txt
+
+      - name: dbt deps
+        working-directory: fidemo
+        run: ../.venv/bin/dbt deps
+
+      - name: dbt parse
+        working-directory: fidemo
+        run: ../.venv/bin/dbt parse --target dev
+
+  docker-build:
+    name: Docker image build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build dbt-fidemo image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          load: true
+          tags: dbt-fidemo:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,62 @@
+version: 2
+
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      dbt:
+        patterns:
+          - "dbt-*"
+          - "dbt_*"
+      python-deps:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "duckdb"
+          - "dbt-sqlserver"
+          - "dbt-*"
+          - "dbt_*"
+    ignore:
+      # Pinned in requirements.in — see CLAUDE.md gotcha #2 (mssql community
+      # extension only publishes for 1.5.1 across the three target platforms).
+      - dependency-name: "duckdb"
+      # Pinned to ==1.9.0 — see CLAUDE.md gotcha #13 (uv otherwise resolves
+      # 1.3.1, which crashes at module-load under dbt-core 1.11+).
+      - dependency-name: "dbt-sqlserver"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # Project pins Python 3.12 in Makefile + requirements.txt; a 3.13/3.14
+      # base-image bump would diverge from host venvs. Allow minor/patch only.
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # mssql/server major bumps (e.g. 2022 → 2025) are not validated against
+      # the current dbt-sqlserver==1.9.0 / Flyway 10.22.0 combination. Allow
+      # minor/patch only; bump majors deliberately when ready.
+      - dependency-name: "mcr.microsoft.com/mssql/server"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: "weekly"

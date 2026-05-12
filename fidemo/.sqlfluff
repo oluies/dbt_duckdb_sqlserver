@@ -11,8 +11,7 @@ max_line_length = 0
 
 
 [sqlfluff:layout:type:alias_expression]
-spacing_before = align
-align_within = select_clause
+spacing_before = single
 spacing_after = touch
 
 [sqlfluff:indentation]
@@ -20,15 +19,15 @@ tab_space_size = 4
 indent_unit = space
 indented_joins = false
 indented_using_on = true
-allow_implicit_indents = true
+implicit_indents = allow
 indented_on_contents = false
 indented_ctes = false
 
 [sqlfluff:rules:aliasing.table]
-aliasing.table = explicit
+aliasing = explicit
 
 [sqlfluff:rules:aliasing.column]
-aliasing.column = explicit
+aliasing = explicit
 
 [sqlfluff:rules:aliasing.expression]
 allow_scalar = True

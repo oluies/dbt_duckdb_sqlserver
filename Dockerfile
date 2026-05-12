@@ -16,7 +16,7 @@
 FROM python:3.12-slim-bookworm
 
 ARG TARGETARCH
-ARG FLYWAY_VERSION=10.10.0
+ARG FLYWAY_VERSION=10.22.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -56,7 +56,7 @@ RUN apt-get update \
 
 # ---- Flyway CLI (noarch — uses system Java) ------------------------------
 # Maven Central ships a `linux-x64` and a noarch `flyway-commandline-VER.tar.gz`
-# but NOT a `linux-arm64` archive for 10.10.0. The noarch tarball works on any
+# but NOT a `linux-arm64` archive for 10.x (verified through 10.22.0). The noarch tarball works on any
 # CPU because it defers to the system JRE installed above. Simpler and keeps
 # the image reproducible across amd64/arm64 builds.
 RUN set -eux; \
@@ -71,7 +71,7 @@ RUN set -eux; \
 # ---- uv + Python deps -----------------------------------------------------
 # uv installs into /usr/local/bin; using it to create an isolated venv at
 # /opt/venv keeps the system Python pristine and the install reproducible.
-COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.11.12 /uv /usr/local/bin/uv
 
 WORKDIR /workspace
 COPY requirements.txt /tmp/requirements.txt

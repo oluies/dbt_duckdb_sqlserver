@@ -55,14 +55,14 @@ def main():
     BASE_DIR = "seedcsv"
 
     s3_client = boto3.client(
-        's3',
+        "s3",
         endpoint_url=MINIO_ENDPOINT,
         aws_access_key_id=ACCESS_KEY,
         aws_secret_access_key=SECRET_KEY,
         config=Config(
-            signature_version="s3v4",           # ← fixes SignatureDoesNotMatch
-            s3={'addressing_style': 'path'}
-        )
+            signature_version="s3v4",  # ← fixes SignatureDoesNotMatch
+            s3={"addressing_style": "path"},
+        ),
     )
 
     if not os.path.isdir(SEED_DIR):

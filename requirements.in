@@ -1,11 +1,11 @@
 black
 dbt-duckdb
-# Pinned to 1.5.1 — the NEWEST DuckDB where the `mssql` community extension
-# is published across osx_arm64, linux_amd64, and linux_arm64 on
-# community-extensions.duckdb.org (1.5.2+ has 404s everywhere, per matrix
-# probe on 2026-04-14). 1.4.x also works but 1.5.1 is strictly newer.
+# Pinned to 1.5.2 — the NEWEST DuckDB where the `mssql` community extension
+# (https://github.com/hugr-lab/mssql-extension) is published across
+# osx_arm64, linux_amd64, and linux_arm64 on community-extensions.duckdb.org
+# (1.5.3+ and 1.6.x currently 404 everywhere, per matrix probe on 2026-05-11).
 # See fidemo/macros/materialization_mssql_native.sql.
-duckdb==1.5.1
+duckdb==1.5.2
 networkx
 pandas
 plotly

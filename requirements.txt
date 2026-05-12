@@ -92,11 +92,11 @@ deepdiff==8.6.2
     # via dbt-common
 diff-cover==10.2.0
     # via sqlfluff
-duckdb==1.5.1
+duckdb==1.5.2
     # via
     #   -r requirements.in
     #   dbt-duckdb
-idna==3.13
+idna==3.14
     # via requests
 importlib-metadata==8.9.0
     # via dbt-semantic-interfaces
@@ -161,7 +161,7 @@ packaging==26.2
     #   dbt-core
     #   plotly
     #   pytest
-pandas==3.0.2
+pandas==3.0.3
     # via -r requirements.in
 parsedatetime==2.6
     # via agate
@@ -241,9 +241,9 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2026.4.4
+regex==2026.5.9
     # via sqlfluff
-requests==2.33.1
+requests==2.34.0
     # via
     #   -r requirements.in
     #   azure-core

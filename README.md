@@ -167,7 +167,7 @@ Command Palette → **Dev Containers: Reopen in Container**. The `.devcontainer/
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| Step 4 fails downloading `mssql.duckdb_extension.gz` | Outbound HTTPS blocked, or DuckDB version drift | `docker compose --profile dev exec dbt-runner curl -sI https://community-extensions.duckdb.org/v1.5.1/linux_amd64/mssql.duckdb_extension.gz` → should return `HTTP/2 200` |
+| Step 4 fails downloading `mssql.duckdb_extension.gz` | Outbound HTTPS blocked, or DuckDB version drift | `docker compose --profile dev exec dbt-runner curl -sI https://community-extensions.duckdb.org/v1.5.2/linux_amd64/mssql.duckdb_extension.gz` → should return `HTTP/2 200` |
 | Step 4 fails with `could not resolve host: minio-dbt-duckdb` | Runner not on the compose network | `docker compose --profile dev exec dbt-runner getent hosts minio-dbt-duckdb` → should return an internal IP |
 | Step 4 fails with `Login failed for user 'fidemo_loader'` | `init-db` skipped or Flyway didn't run | `make init-db` and retry |
 | Step 6 returns `Invalid object name 'finance.snap_scb_bulkfil_scd2'` | Snapshot step skipped or failed | Re-run step 4 (the snapshot phase), then retry |
@@ -251,7 +251,7 @@ Env vars expected (defaulted in the Makefile — override as needed):
 | Custom `mssql_native` dbt materialization | First-class DuckDB → SQL Server push via the `mssql` community extension; native TDS, no pandas/SQLAlchemy roundtrip. |
 | `disable_transactions: true` in dev profile | Required — dbt-duckdb's default `BEGIN…COMMIT` doesn't propagate to DuckLake's SQLite catalog, so writes silently don't persist. |
 | `-- depends_on: {{ ref(...) }}` + hardcoded FQN in the DuckLake landing | `database='lake'` in config trips dbt's pre-run relation checks (lake not attached yet). Comment-based dependency is dbt's documented escape hatch. |
-| `duckdb==1.5.1` pin | Newest DuckDB where the `mssql` community extension is published for osx_arm64 + linux_amd64 + linux_arm64 (1.5.2+ returns 404). |
+| `duckdb==1.5.2` pin | Newest DuckDB where the [`mssql` community extension](https://github.com/hugr-lab/mssql-extension) is published for osx_arm64 + linux_amd64 + linux_arm64 (1.5.3+ and 1.6.x return 404, verified 2026-05-11). |
 | `dbt-sqlserver==1.9.0` pin | 1.3.1 imports `dbt.clients.agate_helper` which was removed in dbt-core 1.10+. |
 | `encoding='latin-1'` (not `ISO8859_15`) | DuckDB's CSV reader advertises 300+ ICU encodings but most apply Unicode compatibility normalization that mangles ASCII `F` → fullwidth `Ｆ`. Only `utf-8`/`utf-16`/`latin-1` are reliable. |
 

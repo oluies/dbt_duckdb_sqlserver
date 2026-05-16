@@ -67,7 +67,7 @@ dbt-common==1.38.0
     #   dbt-duckdb
     #   dbt-fabric
     #   dbt-sqlserver
-dbt-core==1.11.9
+dbt-core==1.11.10
     # via
     #   -r requirements.in
     #   dbt-duckdb
@@ -96,6 +96,8 @@ duckdb==1.5.2
     # via
     #   -r requirements.in
     #   dbt-duckdb
+greenlet==3.5.0
+    # via sqlalchemy
 idna==3.14
     # via requests
 importlib-metadata==8.9.0
@@ -128,7 +130,7 @@ leather==0.4.1
     # via agate
 markupsafe==3.0.3
     # via jinja2
-mashumaro==3.14
+mashumaro[msgpack]==3.14
     # via
     #   dbt-adapters
     #   dbt-common
@@ -205,8 +207,10 @@ pygments==2.20.0
     # via
     #   diff-cover
     #   pytest
-pyjwt==2.12.1
-    # via msal
+pyjwt[crypto]==2.12.1
+    # via
+    #   msal
+    #   pyjwt
 pyodbc==5.1.0
     # via
     #   -r requirements.in
@@ -284,7 +288,6 @@ typing-extensions==4.15.0
     #   mashumaro
     #   pydantic
     #   pydantic-core
-    #   referencing
     #   snowplow-tracker
     #   sqlalchemy
     #   typing-inspection

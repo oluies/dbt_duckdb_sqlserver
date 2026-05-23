@@ -19,9 +19,9 @@ babel==2.18.0
     # via agate
 black==25.12.0
     # via -r requirements.in
-boto3==1.43.6
+boto3==1.43.14
     # via -r requirements.in
-botocore==1.43.6
+botocore==1.43.14
     # via
     #   boto3
     #   s3transfer
@@ -96,6 +96,8 @@ duckdb==1.5.2
     # via
     #   -r requirements.in
     #   dbt-duckdb
+greenlet==3.5.1
+    # via sqlalchemy
 idna==3.14
     # via requests
 importlib-metadata==8.9.0
@@ -128,7 +130,7 @@ leather==0.4.1
     # via agate
 markupsafe==3.0.3
     # via jinja2
-mashumaro==3.14
+mashumaro[msgpack]==3.14
     # via
     #   dbt-adapters
     #   dbt-common
@@ -181,9 +183,9 @@ pluggy==1.6.0
     # via
     #   diff-cover
     #   pytest
-polars==1.40.1
+polars==1.41.0
     # via -r requirements.in
-polars-runtime-32==1.40.1
+polars-runtime-32==1.41.0
     # via polars
 protobuf==6.33.6
     # via
@@ -205,16 +207,16 @@ pygments==2.20.0
     # via
     #   diff-cover
     #   pytest
-pyjwt==2.12.1
-    # via msal
+pyjwt[crypto]==2.12.1
+    # via
+    #   msal
+    #   pyjwt
 pyodbc==5.1.0
     # via
     #   -r requirements.in
     #   dbt-fabric
 pytest==9.0.3
-    # via
-    #   -r requirements.in
-    #   sqlfluff
+    # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via
     #   botocore
@@ -243,7 +245,7 @@ referencing==0.37.0
     #   jsonschema-specifications
 regex==2026.5.9
     # via sqlfluff
-requests==2.34.0
+requests==2.34.2
     # via
     #   -r requirements.in
     #   azure-core
@@ -263,7 +265,7 @@ snowplow-tracker==1.1.0
     # via dbt-core
 sqlalchemy==2.0.49
     # via -r requirements.in
-sqlfluff==4.1.0
+sqlfluff==4.2.1
     # via -r requirements.in
 sqlparse==0.5.5
     # via dbt-core
@@ -284,7 +286,6 @@ typing-extensions==4.15.0
     #   mashumaro
     #   pydantic
     #   pydantic-core
-    #   referencing
     #   snowplow-tracker
     #   sqlalchemy
     #   typing-inspection

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Europe/Stockholm",
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "description": "PIN, carried over from .github/dependabot.yml's `ignore` list, reason unchanged: pinned in requirements.in -- see CLAUDE.md gotcha #2 (the mssql community extension only publishes for 1.5.x across the three target platforms). Do not let a bot move this; bump it in requirements.in deliberately after re-probing the extension matrix.",
+      "matchPackageNames": ["duckdb"],
+      "enabled": false
+    },
+    {
+      "description": "PIN, carried over from dependabot's `ignore` list, reason unchanged: pinned to ==1.9.0 -- see CLAUDE.md gotcha #13 (uv otherwise resolves 1.3.1, which crashes at module-load under dbt-core 1.11+).",
+      "matchPackageNames": ["dbt-sqlserver"],
+      "enabled": false
+    },
+    {
+      "description": "Was the pip 'dbt' group (patterns dbt-*, dbt_*), weekly, limit 5. dbt-sqlserver is excluded by the disabling rule above.",
+      "matchManagers": ["pip_requirements", "pip-compile", "pep621"],
+      "matchPackageNames": ["dbt-*", "dbt_*"],
+      "groupName": "dbt"
+    },
+    {
+      "description": "Was the pip 'python-deps' group (patterns *, excluding duckdb, dbt-sqlserver, dbt-*, dbt_*), weekly, limit 5.",
+      "matchManagers": ["pip_requirements", "pip-compile", "pep621"],
+      "matchPackageNames": ["*", "!duckdb", "!dbt-sqlserver", "!dbt-*", "!dbt_*"],
+      "groupName": "python-deps"
+    },
+    {
+      "description": "CAP, carried over from the docker ecosystem's `ignore` (python, semver-major), reason unchanged: the project pins Python 3.12 in Makefile + requirements.txt; a 3.13/3.14 base-image bump would diverge from host venvs. Minor and patch still flow.",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "matchPackageNames": ["python"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "CAP, carried over from the docker-compose ecosystem's `ignore` (mcr.microsoft.com/mssql/server, semver-major), reason unchanged: mssql/server major bumps (e.g. 2022 -> 2025) are not validated against the current dbt-sqlserver==1.9.0 / Flyway 10.22.0 combination. Bump majors deliberately when ready.",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "matchPackageNames": ["mcr.microsoft.com/mssql/server"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Was the docker and docker-compose ecosystems, weekly, limit 5 each. The two caps above still apply.",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "docker images"
+    },
+    {
+      "description": "Was the github-actions ecosystem, weekly, limit 5. Grouped into one PR.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "description": "Was the devcontainers ecosystem, weekly.",
+      "matchManagers": ["devcontainer"],
+      "groupName": "devcontainer"
+    }
+  ]
+}
